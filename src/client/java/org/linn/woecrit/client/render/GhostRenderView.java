@@ -8,6 +8,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.biome.ColorResolver;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -17,7 +18,10 @@ public class GhostRenderView implements BlockRenderView {
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        return Blocks.TORCH.getDefaultState();
+        if (pos.getManhattanDistance(new Vec3i(0, -56, 0)) < 5) {
+            return Blocks.GLOWSTONE.getDefaultState();
+        }
+        return Blocks.AIR.getDefaultState();
     }
 
     @Override
@@ -27,7 +31,7 @@ public class GhostRenderView implements BlockRenderView {
 
     @Override
     public float getBrightness(Direction direction, boolean shaded) {
-        return 0;
+        return 1;
     }
 
     @Override

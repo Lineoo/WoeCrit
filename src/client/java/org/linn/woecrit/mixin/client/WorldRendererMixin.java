@@ -8,14 +8,17 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.ObjectAllocator;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.linn.woecrit.client.freecam.Freecam;
 import org.linn.woecrit.client.render.GhostRender;
+import org.linn.woecrit.client.world.GhostWorld;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,6 +45,9 @@ public abstract class WorldRendererMixin {
             VertexConsumerProvider vertexConsumers
     );
     @Shadow @Final private ObjectArrayList<ChunkBuilder.BuiltChunk> builtChunks;
+
+    @Shadow
+    private @Nullable ClientWorld world;
 
     @Inject(method = "renderEntities", at = @At("TAIL"))
     private void renderClientPlayer(
@@ -95,9 +101,11 @@ public abstract class WorldRendererMixin {
             CallbackInfoReturnable<SectionRenderState> ci
     ) {
         if (Freecam.isEnabled()) {
-                SectionRenderState sectionRenderState = GhostRender.INSTANCE.renderBlockLayers(matrix4fc, d, e, f);
-                sectionRenderState.renderSection(BlockRenderLayerGroup.OPAQUE);
-                // TODO Others
+            var dimension = world.getDimensionEntry();
+            GhostRender ghostRender = GhostWorld.worldsTwinMap.get(dimension).render;
+            SectionRenderState sectionRenderState = ghostRender.blockRender.renderBlockLayers(matrix4fc, d, e, f);
+            sectionRenderState.renderSection(BlockRenderLayerGroup.OPAQUE);
+            // TODO Others
         }
     }
 
@@ -113,6 +121,8 @@ public abstract class WorldRendererMixin {
             Vector4f fogColor,
             boolean shouldRenderSky,
             CallbackInfo ci) {
-        GhostRender.INSTANCE.blockRender.cameraPosition = camera.getCameraPos();
+        var dimension = world.getDimensionEntry();
+        GhostRender ghostRender = GhostWorld.worldsTwinMap.get(dimension).render;
+        ghostRender.blockRender.cameraPosition = camera.getCameraPos();
     }
 }

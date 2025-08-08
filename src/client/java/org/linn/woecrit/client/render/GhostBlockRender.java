@@ -1,17 +1,19 @@
 package org.linn.woecrit.client.render;
 
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.DynamicUniforms;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.*;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.util.BufferAllocator;
@@ -23,42 +25,35 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profilers;
 import net.minecraft.util.profiler.ScopedProfiler;
-import net.minecraft.world.BlockRenderView;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
 
 public class GhostBlockRender {
-    private final BlockRenderManager blockRenderManager;
-    private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
-
-    public ChunkRenderData chunkRenderData;
-    private ChunkSectionPos sectionPos = ChunkSectionPos.from(1, -40, 1);
+    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final BlockRenderManager blockRenderManager = client.getBlockRenderManager();
 
     public Vec3d cameraPosition = Vec3d.ZERO;
-
     private BlockBufferAllocatorStorage allocatorStorage = new BlockBufferAllocatorStorage();
 
-    public GhostBlockRender(
-            BlockRenderManager blockRenderManager,
-            BlockEntityRenderDispatcher blockEntityRenderDispatcher
-    ) {
-        this.blockRenderManager = blockRenderManager;
-        this.blockEntityRenderDispatcher = blockEntityRenderDispatcher;
-    }
+    public final List<GhostBuiltChunk> builtChunksTwinMap = new ArrayList<>();
 
-    public void build_new() {
+    public GhostBlockRender() {}
+
+    ///  @see SectionBuilder#build
+    public void build(GhostBuiltChunk chunk) {
         // Custom provide source
         GhostRenderView renderRegion = new GhostRenderView();
         VertexSorter vertexSorter = VertexSorter.byDistance(
-                (float)(cameraPosition.x - sectionPos.getMinX()),
-                (float)(cameraPosition.y - sectionPos.getMinY()),
-                (float)(cameraPosition.z - sectionPos.getMinZ()));
+                (float)(cameraPosition.x - chunk.sectionPos.getMinX()),
+                (float)(cameraPosition.y - chunk.sectionPos.getMinY()),
+                (float)(cameraPosition.z - chunk.sectionPos.getMinZ()));
 
         SectionBuilder.RenderData renderData = new SectionBuilder.RenderData();
-        BlockPos blockPos = sectionPos.getMinPos();
+        BlockPos blockPos = chunk.sectionPos.getMinPos();
         BlockPos blockPos2 = blockPos.add(15, 15, 15);
         ChunkOcclusionDataBuilder chunkOcclusionDataBuilder = new ChunkOcclusionDataBuilder();
         MatrixStack matrixStack = new MatrixStack();
@@ -113,17 +108,17 @@ public class GhostBlockRender {
         renderData.chunkOcclusionData = chunkOcclusionDataBuilder.build();
 
         NormalizedRelativePos normalizedRelativePos =
-                NormalizedRelativePos.of(this.cameraPosition, sectionPos.asLong());
-        chunkRenderData = new ChunkRenderData(normalizedRelativePos, renderData);
-        uploadLayer(renderData.buffers, chunkRenderData);
+                NormalizedRelativePos.of(this.cameraPosition, chunk.sectionPos.asLong());
+        chunk.chunkRenderData = new ChunkRenderData(normalizedRelativePos, renderData);
+        uploadLayer(renderData.buffers, chunk);
     }
 
-    private void uploadLayer(Map<BlockRenderLayer, BuiltBuffer> buffersByLayer, ChunkRenderData renderData) {
+    private void uploadLayer(Map<BlockRenderLayer, BuiltBuffer> buffersByLayer, GhostBuiltChunk chunk) {
         buffersByLayer.forEach((layer, buffer) -> {
             ScopedProfiler scopedProfiler = Profilers.get().scoped("Upload Section Layer");
 
             try {
-                renderData.upload(layer, buffer, this.sectionPos.asLong());
+                chunk.chunkRenderData.upload(layer, buffer, chunk.sectionPos.asLong());
                 buffer.close();
             } catch (Throwable var8) {
                 if (scopedProfiler != null) {
@@ -161,4 +156,71 @@ public class GhostBlockRender {
         return bufferBuilder;
     }
 
+    /// @see net.minecraft.client.render.WorldRenderer
+    public SectionRenderState renderBlockLayers(Matrix4fc matrix4fc, double d, double e, double f) {
+        EnumMap<BlockRenderLayer, List<RenderPass.RenderObject<GpuBufferSlice[]>>> enumMap =
+                new EnumMap<>(BlockRenderLayer.class);
+
+        List<DynamicUniforms.UniformValue> list = new ArrayList<>();
+        Vector4f vector4f = new Vector4f(1.0F, 1.0F, 1.0F, 1.0F);
+        Matrix4f matrix4f = new Matrix4f();
+
+        for (BlockRenderLayer blockRenderLayer : BlockRenderLayer.values()) {
+            enumMap.put(blockRenderLayer, new ArrayList<>());
+        }
+
+        int i = 0;
+        for (var chunk : builtChunksTwinMap) {
+            for (BlockRenderLayer blockRenderLayer2 : BlockRenderLayer.values()) {
+                Buffers buffers = chunk.chunkRenderData.getBuffersForLayer(blockRenderLayer2);
+                if (buffers != null) {
+                    GpuBuffer gpuBuffer;
+                    VertexFormat.IndexType indexType;
+                    if (buffers.getIndexBuffer() == null) {
+                        if (buffers.getIndexCount() > i) {
+                            i = buffers.getIndexCount();
+                        }
+
+                        gpuBuffer = null;
+                        indexType = null;
+                    } else {
+                        gpuBuffer = buffers.getIndexBuffer();
+                        indexType = buffers.getIndexType();
+                    }
+
+                    BlockPos blockPos = chunk.getOrigin();
+                    int j = list.size();
+                    list.add(
+                            new DynamicUniforms.UniformValue(
+                                    matrix4fc,
+                                    vector4f,
+                                    new Vector3f(
+                                            (float)(blockPos.getX() - d),
+                                            (float)(blockPos.getY() - e),
+                                            (float)(blockPos.getZ() - f)),
+                                    matrix4f,
+                                    1.0F
+                            )
+                    );
+                    RenderPass.RenderObject<GpuBufferSlice[]> dynamicTransforms = new RenderPass.RenderObject<>(
+                            0,
+                            buffers.getVertexBuffer(),
+                            gpuBuffer,
+                            indexType,
+                            0,
+                            buffers.getIndexCount(),
+                            (gpuBufferSlicesx, uniformUploader) -> {
+                                uniformUploader.upload(
+                                        "DynamicTransforms",
+                                        gpuBufferSlicesx[j]);
+                            }
+                    );
+                    enumMap.get(blockRenderLayer2).add(dynamicTransforms);
+                }
+            }
+        }
+        GpuBufferSlice[] gpuBufferSlices = RenderSystem.getDynamicUniforms()
+                .writeAll(list.toArray(new DynamicUniforms.UniformValue[0]));
+        return new SectionRenderState(enumMap, i, gpuBufferSlices);
+    }
 }

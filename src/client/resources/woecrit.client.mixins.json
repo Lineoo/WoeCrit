@@ -4,9 +4,12 @@
   "package": "org.linn.woecrit.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "WorldRendererMixin",
+    "BuiltChunkMixin",
+    "BuiltChunkMixin$ChunkBuildertAccessor",
+    "MinecraftClientMixin",
     "MouseMixin",
-    "MinecraftClientMixin"
+    "WorldMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
