@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "woecrit",
+  "version": "${version}",
+  "name": "WoeCrit",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "LGPL-3.0",
+  "icon": "assets/woecrit/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.linn.woecrit.client.WoecritClient"
+    ],
+    "main": [
+      "org.linn.woecrit.Woecrit"
+    ]
+  },
+  "mixins": [
+    "woecrit.mixins.json",
+    {
+      "config": "woecrit.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
