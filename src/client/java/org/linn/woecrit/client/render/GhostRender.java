@@ -6,7 +6,7 @@ import org.linn.woecrit.client.world.GhostWorld;
 public class GhostRender {
     public GhostBlockRender blockRender;
 
-    public GhostRender() {
-        blockRender = new GhostBlockRender();
+    public GhostRender(GhostWorld world) {
+        blockRender = new GhostBlockRender(world);
     }
 }

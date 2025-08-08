@@ -31,7 +31,7 @@ public class BuiltChunkMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void createTwinGhostSection(ChunkBuilder chunkBuilder, int index, long sectionPos, CallbackInfo ci) {
-        var world = ((ChunkBuildertAccessor) chunkBuilder).getWorld();
+        var world = ((ChunkBuilderAccessor) chunkBuilder).getWorld();
         var ghostWorld = GhostWorld.worldsTwinMap.get(world.getDimensionEntry());
         recordedGhostWorld = ghostWorld;
         recordedGhostWorld.render.blockRender.build(recordedGhostBuiltChunk);
@@ -50,7 +50,7 @@ public class BuiltChunkMixin {
     }
 
     @Mixin(ChunkBuilder.class)
-    interface ChunkBuildertAccessor {
+    interface ChunkBuilderAccessor {
         @Accessor ClientWorld getWorld();
     }
 }

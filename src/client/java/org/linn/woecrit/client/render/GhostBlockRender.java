@@ -29,6 +29,7 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.linn.woecrit.client.world.GhostWorld;
 
 import java.util.*;
 
@@ -40,13 +41,16 @@ public class GhostBlockRender {
     private BlockBufferAllocatorStorage allocatorStorage = new BlockBufferAllocatorStorage();
 
     public final List<GhostBuiltChunk> builtChunksTwinMap = new ArrayList<>();
+    public final GhostWorld world;
 
-    public GhostBlockRender() {}
+    public GhostBlockRender(GhostWorld world) {
+        this.world = world;
+    }
 
     ///  @see SectionBuilder#build
     public void build(GhostBuiltChunk chunk) {
         // Custom provide source
-        GhostRenderView renderRegion = new GhostRenderView();
+        GhostRenderView renderRegion = new GhostRenderView(world);
         VertexSorter vertexSorter = VertexSorter.byDistance(
                 (float)(cameraPosition.x - chunk.sectionPos.getMinX()),
                 (float)(cameraPosition.y - chunk.sectionPos.getMinY()),

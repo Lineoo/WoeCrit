@@ -15,5 +15,5 @@ public class GhostWorld {
 
     // Careful about memory leak.
     public final Map<ChunkPos, GhostChunk> chunksTwinMap = new HashMap<>();
-    public final GhostRender render = new GhostRender();
+    public final GhostRender render = new GhostRender(this);
 }

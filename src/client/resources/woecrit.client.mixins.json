@@ -5,10 +5,11 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "BuiltChunkMixin",
-    "BuiltChunkMixin$ChunkBuildertAccessor",
+    "BuiltChunkMixin$ChunkBuilderAccessor",
     "MinecraftClientMixin",
     "MouseMixin",
     "WorldMixin",
+    "WorldChunkMixin",
     "WorldRendererMixin"
   ],
   "injectors": {
