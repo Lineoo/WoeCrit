@@ -16,11 +16,6 @@ import org.lwjgl.glfw.GLFW;
 
 public class Freecam {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
-    private static final KeyBinding TOGGLE_FREECAM = new KeyBinding(
-            "key.woecrit.toggleFreecam",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
-            "category.woecrit.woecrit");
 
     private static boolean enabled = false;
 
@@ -41,15 +36,6 @@ public class Freecam {
     }
     public static FreecamEntity getFreecamPlayer() {
         return freecamPlayer;
-    }
-
-    public static void register() {
-        KeyBindingHelper.registerKeyBinding(TOGGLE_FREECAM);
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (TOGGLE_FREECAM.wasPressed()) {
-                Freecam.toggle();
-            }
-        });
     }
 
     public static void toggle() {

@@ -103,7 +103,7 @@ public abstract class WorldRendererMixin {
             double f,
             CallbackInfoReturnable<SectionRenderState> ci
     ) {
-        if (Freecam.isEnabled()) {
+        if (GhostRender.isEnabled()) {
             var dimension = world.getDimensionEntry();
             GhostRender ghostRender = GhostWorld.worldsTwinMap.get(dimension).render;
             SectionRenderState sectionRenderState = ghostRender.blockRender.renderBlockLayers(matrix4fc, d, e, f);
