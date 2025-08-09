@@ -7,12 +7,14 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.ColorResolver;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.jetbrains.annotations.Nullable;
 import org.linn.woecrit.client.world.GhostWorld;
 
 /// @see net.minecraft.client.render.chunk.ChunkRendererRegion
+// TODO move to GhostWorld
 public class GhostRenderView implements BlockRenderView {
     private GhostWorld world;
 

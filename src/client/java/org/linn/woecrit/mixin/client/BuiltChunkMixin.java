@@ -23,30 +23,35 @@ public class BuiltChunkMixin {
     @Final
     private BlockPos.Mutable origin;
 
-    @Unique
-    private GhostWorld recordedGhostWorld;
+    @Shadow
+    @Final
+    public int index;
 
     @Unique
-    private GhostBuiltChunk recordedGhostBuiltChunk = new GhostBuiltChunk();
+    private GhostWorld world;
+
+    @Unique
+    private GhostBuiltChunk twin = new GhostBuiltChunk();
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void createTwinGhostSection(ChunkBuilder chunkBuilder, int index, long sectionPos, CallbackInfo ci) {
         var world = ((ChunkBuilderAccessor) chunkBuilder).getWorld();
         var ghostWorld = GhostWorld.worldsTwinMap.get(world.getDimensionEntry());
-        recordedGhostWorld = ghostWorld;
-        recordedGhostWorld.render.blockRender.build(recordedGhostBuiltChunk);
-        ghostWorld.render.blockRender.builtChunksTwinMap.add(recordedGhostBuiltChunk);
+        this.world = ghostWorld;
+
+        ghostWorld.render.blockRender.builtChunksTwinMap.put(index, twin);
+        this.world.render.blockRender.build(twin);
     }
 
     @Inject(method = "createRebuildTask", at = @At("HEAD"))
     void rebuildTwinGhostSection(ChunkRendererRegionBuilder builder, CallbackInfoReturnable<ChunkBuilder.BuiltChunk.Task> cir) {
-        recordedGhostWorld.render.blockRender.build(recordedGhostBuiltChunk);
+        world.render.blockRender.build(twin);
     }
 
     @Inject(method = "setSectionPos", at = @At("TAIL"))
     void setTwinGhostSectionPos(long sectionPos, CallbackInfo ci) {
-        recordedGhostBuiltChunk.sectionPos = ChunkSectionPos.from(sectionPos);
-        recordedGhostBuiltChunk.origin = this.origin;
+        twin.sectionPos = ChunkSectionPos.from(sectionPos);
+        twin.origin = this.origin;
     }
 
     @Mixin(ChunkBuilder.class)

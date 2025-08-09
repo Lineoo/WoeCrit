@@ -49,6 +49,9 @@ public abstract class WorldRendererMixin {
     @Shadow
     private @Nullable ClientWorld world;
 
+    @Shadow
+    private @Nullable BuiltChunkStorage chunks;
+
     @Inject(method = "renderEntities", at = @At("TAIL"))
     private void renderClientPlayer(
             MatrixStack matrices,
@@ -124,5 +127,13 @@ public abstract class WorldRendererMixin {
         var dimension = world.getDimensionEntry();
         GhostRender ghostRender = GhostWorld.worldsTwinMap.get(dimension).render;
         ghostRender.blockRender.cameraPosition = camera.getCameraPos();
+    }
+
+    @Inject(method = "reload()V", at = @At("TAIL"))
+    private void updateBuiltChunksStorage(CallbackInfo ci) {
+        var dimension = world.getDimensionEntry();
+        GhostRender ghostRender = GhostWorld.worldsTwinMap.get(dimension).render;
+
+        ghostRender.blockRender.builtChunkStorage = this.chunks;
     }
 }

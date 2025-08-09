@@ -38,13 +38,22 @@ public class GhostBlockRender {
     private final BlockRenderManager blockRenderManager = client.getBlockRenderManager();
 
     public Vec3d cameraPosition = Vec3d.ZERO;
-    private BlockBufferAllocatorStorage allocatorStorage = new BlockBufferAllocatorStorage();
+    private final BlockBufferAllocatorStorage allocatorStorage = new BlockBufferAllocatorStorage();
 
-    public final List<GhostBuiltChunk> builtChunksTwinMap = new ArrayList<>();
+    public final Map<Integer, GhostBuiltChunk> builtChunksTwinMap = new HashMap<>();
+    public BuiltChunkStorage builtChunkStorage;
     public final GhostWorld world;
 
     public GhostBlockRender(GhostWorld world) {
         this.world = world;
+    }
+
+    public void rebuild(BlockPos blockPos) {
+        builtChunkStorage.scheduleRebuild(
+                ChunkSectionPos.getSectionCoord(blockPos.getX()),
+                ChunkSectionPos.getSectionCoord(blockPos.getY()),
+                ChunkSectionPos.getSectionCoord(blockPos.getZ()),
+                false);
     }
 
     ///  @see SectionBuilder#build
@@ -174,7 +183,7 @@ public class GhostBlockRender {
         }
 
         int i = 0;
-        for (var chunk : builtChunksTwinMap) {
+        for (var chunk : builtChunksTwinMap.values()) {
             for (BlockRenderLayer blockRenderLayer2 : BlockRenderLayer.values()) {
                 Buffers buffers = chunk.chunkRenderData.getBuffersForLayer(blockRenderLayer2);
                 if (buffers != null) {

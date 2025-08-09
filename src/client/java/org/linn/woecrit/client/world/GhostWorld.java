@@ -53,7 +53,7 @@ public class GhostWorld {
 
         if (prevBlockState != targetState) {
             // rebuild chunk
-            
+            render.blockRender.rebuild(pos);
         }
 
         return true;
