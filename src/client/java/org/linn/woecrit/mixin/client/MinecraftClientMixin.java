@@ -1,8 +1,10 @@
 package org.linn.woecrit.mixin.client;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.world.ClientWorld;
 import org.linn.woecrit.client.freecam.Freecam;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +26,20 @@ public class MinecraftClientMixin {
         if (Freecam.isEnabled()) {
             var player = Freecam.getFreecamPlayer();
             player.suspendFakeSpectatorOnce();
+        }
+    }
+
+    @Inject(method = "setWorld", at = @At("HEAD"))
+    private void resetBeforeChangineWorld(ClientWorld world, CallbackInfo ci) {
+        if (Freecam.isEnabled()) {
+            Freecam.toggle();
+        }
+    }
+
+    @Inject(method = "disconnect", at = @At("HEAD"))
+    private void resetBeforeDisconnection(Screen disconnectionScreen, boolean transferring, CallbackInfo ci) {
+        if (Freecam.isEnabled()) {
+            Freecam.toggle();
         }
     }
 }
