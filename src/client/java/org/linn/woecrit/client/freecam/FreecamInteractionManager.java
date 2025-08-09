@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
+import org.linn.woecrit.mixin.client.ClientPlayerInteractionManagerAccessor;
 
 public class FreecamInteractionManager extends ClientPlayerInteractionManager {
     private final MinecraftClient client = MinecraftClient.getInstance();
@@ -48,7 +49,7 @@ public class FreecamInteractionManager extends ClientPlayerInteractionManager {
         }
 
         this.breakBlock(pos);
-        // FIXME this.blockBreakingCooldown = 5;
+        ((ClientPlayerInteractionManagerAccessor) this).setBlockBreakingCooldown(5);
 
         return true;
     }

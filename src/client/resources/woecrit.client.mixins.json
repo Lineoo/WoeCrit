@@ -6,6 +6,7 @@
   "client": [
     "BuiltChunkMixin",
     "BuiltChunkMixin$ChunkBuilderAccessor",
+    "ClientPlayerInteractionManagerAccessor",
     "MinecraftClientMixin",
     "MouseMixin",
     "WorldChunkMixin",
