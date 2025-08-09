@@ -17,9 +17,15 @@ import org.linn.woecrit.client.world.GhostWorld;
 // TODO move to GhostWorld
 public class GhostRenderView implements BlockRenderView {
     private GhostWorld world;
+    private boolean originMixed;
 
     public GhostRenderView(GhostWorld world) {
+        this(world, false);
+    }
+
+    public GhostRenderView(GhostWorld world, boolean originMixed) {
         this.world = world;
+        this.originMixed = originMixed;
     }
 
     @Override
@@ -30,6 +36,15 @@ public class GhostRenderView implements BlockRenderView {
 
         var x = ChunkSectionPos.getSectionCoord(pos.getX());
         var z = ChunkSectionPos.getSectionCoord(pos.getZ());
+
+//        if (originMixed) {
+//            var twinChunk = world.twin.getChunk(x, z);
+//            var block = twinChunk.getBlockState(pos);
+//            if (!block.isAir()) {
+//                return block;
+//            }
+//        }
+
         var chunk = world.chunksTwinMap.get(
                 new ChunkPos(x, z));
 
