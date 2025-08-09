@@ -25,6 +25,6 @@ public class WorldMixin {
             int maxChainedNeighborUpdates,
             CallbackInfo ci
     ) {
-        GhostWorld.worldsTwinMap.put(dimensionEntry, new GhostWorld());
+        GhostWorld.worldsTwinMap.put(dimensionEntry, new GhostWorld((World)(Object) this));
     }
 }

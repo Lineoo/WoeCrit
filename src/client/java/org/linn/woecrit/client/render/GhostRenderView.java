@@ -48,7 +48,7 @@ public class GhostRenderView implements BlockRenderView {
 
     @Override
     public LightingProvider getLightingProvider() {
-        return LightingProvider.DEFAULT;
+        return world.twin.getLightingProvider();
     }
 
     @Override

@@ -6,6 +6,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.linn.woecrit.client.render.GhostRender;
 
@@ -18,7 +19,14 @@ public class GhostWorld {
 
     // Careful about memory leak.
     public final Map<ChunkPos, GhostChunk> chunksTwinMap = new HashMap<>();
-    public final GhostRender render = new GhostRender(this);
+    public final GhostRender render;
+
+    public final World twin;
+
+    public GhostWorld(World twin) {
+        this.twin = twin;
+        this.render = new GhostRender(this);
+    }
 
     public GhostChunk getChunk(BlockPos pos) {
         return this.getChunk(

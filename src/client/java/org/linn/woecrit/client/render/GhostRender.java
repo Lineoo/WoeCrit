@@ -1,6 +1,5 @@
 package org.linn.woecrit.client.render;
 
-import net.minecraft.client.MinecraftClient;
 import org.linn.woecrit.client.world.GhostWorld;
 
 public class GhostRender {
