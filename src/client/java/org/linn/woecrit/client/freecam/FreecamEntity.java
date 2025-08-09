@@ -27,6 +27,7 @@ public class FreecamEntity extends ClientPlayerEntity {
         setLoaded(true);
         var abilities = getAbilities();
         abilities.flying = true;
+        abilities.creativeMode = true;
     }
 
     public void suspendFakeSpectatorOnce() {
@@ -42,7 +43,7 @@ public class FreecamEntity extends ClientPlayerEntity {
 
     @Override
     public boolean isBlockBreakingRestricted(World world, BlockPos pos, GameMode gameMode) {
-        return true;
+        return false;
     }
 
     @Override

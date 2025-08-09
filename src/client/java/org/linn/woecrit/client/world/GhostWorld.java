@@ -6,10 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.ColorResolver;
@@ -53,14 +50,17 @@ public class GhostWorld implements BlockRenderView {
     }
 
     public BlockState getBlockState(BlockPos pos) {
-        if (this.isOutOfHeightLimit(pos)) {
-            return Blocks.VOID_AIR.getDefaultState();
+        if (pos.getManhattanDistance(new Vec3i(0, -56, 0)) < 5) {
+            return Blocks.GLOWSTONE.getDefaultState();
         }
 
-        var worldChunk = this.getChunk(
-                ChunkSectionPos.getSectionCoord(pos.getX()),
-                ChunkSectionPos.getSectionCoord(pos.getZ()));
-        return worldChunk.getBlockState(pos);
+        var x = ChunkSectionPos.getSectionCoord(pos.getX());
+        var z = ChunkSectionPos.getSectionCoord(pos.getZ());
+
+        var chunk = chunksTwinMap.get(
+                new ChunkPos(x, z));
+
+        return chunk != null ? chunk.getBlockState(pos) : Blocks.VOID_AIR.getDefaultState();
     }
 
     @Override
@@ -88,12 +88,12 @@ public class GhostWorld implements BlockRenderView {
 
     @Override
     public int getHeight() {
-        return 0;
+        return twin.getHeight();
     }
 
     @Override
     public int getBottomY() {
-        return 0;
+        return twin.getBottomY();
     }
 
     @Override

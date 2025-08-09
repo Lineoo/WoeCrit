@@ -39,12 +39,30 @@ public class WorldMixin {
     }
 
     @Inject(method = "getBlockState", at = @At("TAIL"), cancellable = true)
-    private void cooperateWithGhostWorld(BlockPos pos, CallbackInfoReturnable<BlockState> cir) {
+    private void getMixedBlockState(BlockPos pos, CallbackInfoReturnable<BlockState> cir) {
         if (Freecam.isEnabled() && GhostRender.isEnabled()) {
             var block = cir.getReturnValue();
             if (block.isAir()) {
                 cir.setReturnValue(ghostTwin.getBlockState(pos));
             }
+        }
+    }
+
+    @Inject(
+            method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;II)Z",
+            at = @At("HEAD"),
+            cancellable = true)
+    private void setGhostBlockState(
+            BlockPos pos,
+            BlockState state,
+            int flags,
+            int maxUpdateDepth,
+            CallbackInfoReturnable<Boolean> cir
+    ) {
+        // FIXME disable render in freecam will break it
+        if (Freecam.isEnabled() && GhostRender.isEnabled()) {
+            var success = ghostTwin.setBlockState(pos, state);
+            cir.setReturnValue(success);
         }
     }
 }
