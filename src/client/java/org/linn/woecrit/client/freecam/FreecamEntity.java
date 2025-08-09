@@ -8,12 +8,8 @@ import net.minecraft.util.PlayerInput;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import org.linn.woecrit.client.render.GhostRenderView;
-import org.linn.woecrit.client.world.GhostWorld;
 
 public class FreecamEntity extends ClientPlayerEntity {
     private boolean suspendFakeSpectator = false;

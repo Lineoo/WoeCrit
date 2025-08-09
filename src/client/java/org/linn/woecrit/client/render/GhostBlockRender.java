@@ -59,15 +59,14 @@ public class GhostBlockRender {
     ///  @see SectionBuilder#build
     public void build(GhostBuiltChunk chunk) {
         // Custom provide source
-        GhostRenderView renderRegion = new GhostRenderView(world);
         VertexSorter vertexSorter = VertexSorter.byDistance(
                 (float)(cameraPosition.x - chunk.sectionPos.getMinX()),
                 (float)(cameraPosition.y - chunk.sectionPos.getMinY()),
                 (float)(cameraPosition.z - chunk.sectionPos.getMinZ()));
 
         SectionBuilder.RenderData renderData = new SectionBuilder.RenderData();
-        BlockPos blockPos = chunk.sectionPos.getMinPos();
-        BlockPos blockPos2 = blockPos.add(15, 15, 15);
+        BlockPos blockFrom = chunk.sectionPos.getMinPos();
+        BlockPos blockTo = blockFrom.add(15, 15, 15);
         ChunkOcclusionDataBuilder chunkOcclusionDataBuilder = new ChunkOcclusionDataBuilder();
         MatrixStack matrixStack = new MatrixStack();
         BlockModelRenderer.enableBrightnessCache();
@@ -75,31 +74,31 @@ public class GhostBlockRender {
         Random random = Random.create();
         List<BlockModelPart> list = new ObjectArrayList<>();
 
-        for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
-            BlockState blockState = renderRegion.getBlockState(blockPos3);
+        for (BlockPos blockPos : BlockPos.iterate(blockFrom, blockTo)) {
+            BlockState blockState = world.getBlockState(blockPos);
             if (blockState.isOpaqueFullCube()) {
-                chunkOcclusionDataBuilder.markClosed(blockPos3);
+                chunkOcclusionDataBuilder.markClosed(blockPos);
             }
 
             FluidState fluidState = blockState.getFluidState();
             if (!fluidState.isEmpty()) {
                 BlockRenderLayer blockRenderLayer = RenderLayers.getFluidLayer(fluidState);
                 BufferBuilder bufferBuilder = this.beginBufferBuilding(map, allocatorStorage, blockRenderLayer);
-                this.blockRenderManager.renderFluid(blockPos3, renderRegion, bufferBuilder, blockState, fluidState);
+                this.blockRenderManager.renderFluid(blockPos, world, bufferBuilder, blockState, fluidState);
             }
 
             if (blockState.getRenderType() == BlockRenderType.MODEL) {
                 BlockRenderLayer blockRenderLayer = RenderLayers.getBlockLayer(blockState);
                 BufferBuilder bufferBuilder = this.beginBufferBuilding(map, allocatorStorage, blockRenderLayer);
-                random.setSeed(blockState.getRenderingSeed(blockPos3));
+                random.setSeed(blockState.getRenderingSeed(blockPos));
                 this.blockRenderManager.getModel(blockState).addParts(random, list);
                 matrixStack.push();
                 matrixStack.translate(
-                        (float)ChunkSectionPos.getLocalCoord(blockPos3.getX()),
-                        (float)ChunkSectionPos.getLocalCoord(blockPos3.getY()),
-                        (float)ChunkSectionPos.getLocalCoord(blockPos3.getZ())
+                        (float)ChunkSectionPos.getLocalCoord(blockPos.getX()),
+                        (float)ChunkSectionPos.getLocalCoord(blockPos.getY()),
+                        (float)ChunkSectionPos.getLocalCoord(blockPos.getZ())
                 );
-                this.blockRenderManager.renderBlock(blockState, blockPos3, renderRegion, matrixStack, bufferBuilder, true, list);
+                this.blockRenderManager.renderBlock(blockState, blockPos, world, matrixStack, bufferBuilder, true, list);
                 matrixStack.pop();
                 list.clear();
             }
@@ -236,4 +235,15 @@ public class GhostBlockRender {
                 .writeAll(list.toArray(new DynamicUniforms.UniformValue[0]));
         return new SectionRenderState(enumMap, i, gpuBufferSlices);
     }
+
+    public static class GhostBuiltChunk {
+        public ChunkRenderData chunkRenderData;
+        public ChunkSectionPos sectionPos;
+        public BlockPos.Mutable origin;
+
+        public BlockPos getOrigin() {
+            return this.origin;
+        }
+    }
+
 }

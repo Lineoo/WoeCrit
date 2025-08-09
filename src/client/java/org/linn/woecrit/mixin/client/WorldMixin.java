@@ -9,7 +9,6 @@ import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import org.linn.woecrit.client.freecam.Freecam;
 import org.linn.woecrit.client.render.GhostRender;
-import org.linn.woecrit.client.render.GhostRenderView;
 import org.linn.woecrit.client.world.GhostWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -42,12 +41,9 @@ public class WorldMixin {
     @Inject(method = "getBlockState", at = @At("TAIL"), cancellable = true)
     private void cooperateWithGhostWorld(BlockPos pos, CallbackInfoReturnable<BlockState> cir) {
         if (Freecam.isEnabled() && GhostRender.isEnabled()) {
-            var view = new GhostRenderView(ghostTwin);
-
             var block = cir.getReturnValue();
-
             if (block.isAir()) {
-                cir.setReturnValue(view.getBlockState(pos));
+                cir.setReturnValue(ghostTwin.getBlockState(pos));
             }
         }
     }

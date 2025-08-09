@@ -5,7 +5,7 @@ import net.minecraft.client.render.chunk.ChunkRendererRegionBuilder;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import org.linn.woecrit.client.render.GhostBuiltChunk;
+import org.linn.woecrit.client.render.GhostBlockRender;
 import org.linn.woecrit.client.world.GhostWorld;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class BuiltChunkMixin {
     @Shadow
     @Final
-    private BlockPos.Mutable origin;
+    BlockPos.Mutable origin;
 
     @Shadow
     @Final
@@ -31,7 +31,7 @@ public class BuiltChunkMixin {
     private GhostWorld world;
 
     @Unique
-    private GhostBuiltChunk twin = new GhostBuiltChunk();
+    private GhostBlockRender.GhostBuiltChunk twin = new GhostBlockRender.GhostBuiltChunk();
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void createTwinGhostSection(ChunkBuilder chunkBuilder, int index, long sectionPos, CallbackInfo ci) {
