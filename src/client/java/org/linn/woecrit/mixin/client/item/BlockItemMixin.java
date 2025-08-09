@@ -20,33 +20,5 @@ public abstract class BlockItemMixin {
     public abstract Block getBlock();
 
     @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
-    private void useOnBlockAsGhost(ItemUsageContext usageContext, CallbackInfoReturnable<ActionResult> cir) {
-        if (!Freecam.isEnabled()) {
-            return;
-        } else {
-            cir.cancel();
-        }
-
-        var context = new ItemPlacementContext(usageContext);
-
-        if (!this.getBlock().isEnabled(context.getWorld().getEnabledFeatures())) {
-            cir.setReturnValue(ActionResult.FAIL);
-        }
-
-        if (!context.canPlace()) {
-            cir.setReturnValue(ActionResult.FAIL);
-        }
-
-        BlockState blockState = this.getBlock().getPlacementState(context);
-
-        if (blockState == null) {
-            cir.setReturnValue(ActionResult.FAIL);
-        }
-
-        var world = context.getWorld();
-        var ghostWorld = GhostWorld.worldsTwinMap.get(world.getDimensionEntry());
-        var success = ghostWorld.setBlockState(context.getBlockPos(), blockState);
-
-        cir.setReturnValue(success ? ActionResult.SUCCESS : ActionResult.FAIL);
-    }
+    private void useOnBlockAsGhost(ItemUsageContext usageContext, CallbackInfoReturnable<ActionResult> cir) {}
 }
