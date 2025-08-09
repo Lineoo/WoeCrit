@@ -3,6 +3,7 @@ package org.linn.woecrit.client.freecam;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -55,6 +56,11 @@ public class FreecamEntity extends ClientPlayerEntity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public ItemStack getStackInHand(Hand hand) {
+        return super.getStackInHand(hand);
     }
 
     @Override

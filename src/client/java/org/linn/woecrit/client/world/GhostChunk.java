@@ -16,7 +16,7 @@ public class GhostChunk {
 
     public GhostChunk(ChunkPos chunkPos) {}
 
-    ///  @see net.minecraft.world.chunk.Chunk#getBlockState
+    ///  @see net.minecraft.world.chunk.Chunk#getBlockState(BlockPos)
     public BlockState getBlockState(BlockPos pos) {
         if (pos.getY() == -40) {
             return Blocks.OAK_LOG.getDefaultState();
@@ -26,7 +26,7 @@ public class GhostChunk {
     }
 
     ///  @see net.minecraft.world.chunk.WorldChunk#setBlockState(BlockPos, BlockState, int)
-    public @Nullable BlockState setBlockState(BlockPos pos, BlockState state, int flags) {
+    public @Nullable BlockState setBlockState(BlockPos pos, BlockState state) {
         var blockState = blockStateMap.put(pos, state);
         return blockState != null ? blockState : Blocks.VOID_AIR.getDefaultState();
     }

@@ -8,9 +8,10 @@
     "BuiltChunkMixin$ChunkBuilderAccessor",
     "MinecraftClientMixin",
     "MouseMixin",
-    "WorldMixin",
     "WorldChunkMixin",
-    "WorldRendererMixin"
+    "WorldMixin",
+    "WorldRendererMixin",
+    "item.BlockItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
