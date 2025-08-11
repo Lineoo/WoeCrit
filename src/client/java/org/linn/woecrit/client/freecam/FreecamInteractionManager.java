@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
+import org.linn.woecrit.client.render.GhostRender;
 import org.linn.woecrit.mixin.client.ClientPlayerInteractionManagerAccessor;
 
 public class FreecamInteractionManager extends ClientPlayerInteractionManager {
@@ -34,6 +35,10 @@ public class FreecamInteractionManager extends ClientPlayerInteractionManager {
 
     @Override
     public ActionResult interactBlock(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult) {
+        if (!GhostRender.isEnabled()) {
+            // Stop interaction when renderer is down
+            return ActionResult.FAIL;
+        }
         return super.interactBlock(player, hand, hitResult);
     }
 

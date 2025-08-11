@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
+import org.linn.woecrit.client.render.GhostRender;
 
 public class FreecamEntity extends ClientPlayerEntity {
     private boolean suspendFakeSpectator = false;
@@ -43,7 +44,8 @@ public class FreecamEntity extends ClientPlayerEntity {
 
     @Override
     public boolean isBlockBreakingRestricted(World world, BlockPos pos, GameMode gameMode) {
-        return false;
+        // Not able when renderer is down
+        return !GhostRender.isEnabled();
     }
 
     @Override
