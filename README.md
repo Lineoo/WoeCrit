@@ -7,4 +7,17 @@ A simple assisting mod.
 
 🛠️⛏️ Got a lot of work to do yet!
 
-🚧🚧 Stability not guaranteed. _Anything_ could change. 🚧🚧
+🚧🚧 Stability not guaranteed. ___EVERYTHING___ could change. 🚧🚧
+
+## Current Functions
+
+- Freecam (`V` by default)
+- Ghost Renderer (`B` by default)
+- A menu for control (`C` by default)
+- NaN
+
+## Plan
+
+- [ ] Schematic import
+- [ ] Abstract bocks
+- [ ] Fix bugs (Probably not)
