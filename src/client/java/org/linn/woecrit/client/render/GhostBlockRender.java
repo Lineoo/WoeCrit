@@ -49,6 +49,9 @@ public class GhostBlockRender {
     }
 
     public void rebuild(BlockPos blockPos) {
+        if (builtChunkStorage == null) {
+            return;
+        }
         builtChunkStorage.scheduleRebuild(
                 ChunkSectionPos.getSectionCoord(blockPos.getX()),
                 ChunkSectionPos.getSectionCoord(blockPos.getY()),
