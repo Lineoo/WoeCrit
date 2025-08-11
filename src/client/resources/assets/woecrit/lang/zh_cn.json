@@ -1,0 +1,9 @@
+{
+  "woecrit_screen.main.title": "WoeCrit 主屏幕",
+  "category.woecrit.woecrit": "WoeCrit",
+  "key.woecrit.toggleFreecam": "切换自由视角",
+  "key.woecrit.toggleGhostRender": "切换幽灵渲染器",
+  "key.woecrit.toggleMainScreen": "开关 WoeCrit 主菜单",
+  "woecrit_screen.renderer.tooltip": "切换幽灵渲染器",
+  "woecrit_screen.freecam.tooltip": "切换自由视角"
+}

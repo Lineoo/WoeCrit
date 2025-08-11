@@ -1,0 +1,9 @@
+{
+  "woecrit_screen.main.title": "WoeCrit Main Screen",
+  "category.woecrit.woecrit": "WoeCrit",
+  "key.woecrit.toggleFreecam": "Toggle Freecam",
+  "key.woecrit.toggleGhostRender": "Toggle Ghost Render",
+  "key.woecrit.toggleMainScreen": "Toggle WoeCrit Main Menu",
+  "woecrit_screen.renderer.tooltip": "Toggle Ghost Renderer",
+  "woecrit_screen.freecam.tooltip": "Toggle Freecam"
+}
